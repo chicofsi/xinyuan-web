@@ -13,6 +13,37 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+          overflow-y: auto;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {background-color: #ddd}
+
+        /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('js/jquery-multi-select/css/multi-select.css')}}" />
@@ -104,7 +135,22 @@
                                         </th> 
                                         <th>
                                             Customer
-                                            <a id="CustomerFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="CustomerFilter" style="text-decoration: none;color: #dddddd" onclick="myFunction()"  class="fas fa-filter pull-right"></a>
+                                            <div id="myDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="myFilter" class="form-control" onkeyup="myFunction()" placeholder="Search for card name...">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="myProducts">
+                                                        <div class="col-md-12">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Level
@@ -624,6 +670,22 @@
         <script type="text/javascript" src="{{asset('js/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
         <script type="text/javascript" src="{{asset('js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
+            window.onclick = function(event) {
+              if (!event.target.matches('#CustomerFilter')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                  var openDropdown = dropdowns[i];
+                  if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                  }
+                }
+              }
+            }
+            function myFunction() {
+              document.getElementById("myDropdown").classList.toggle("show");
+            }
+
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
