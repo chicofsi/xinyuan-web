@@ -16,6 +16,33 @@
         .images img{
             object-fit: contain !important;
         }
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('js/jquery-tags-input/jquery.tagsinput.css') }} " />
@@ -83,13 +110,78 @@
                                         <th>
                                             Photo 
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Type
-                                            <a id="TypeFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="TypeFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('type')"  class="fas fa-filter pull-right"></a>
+                                            <div id="typeDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="typeSearch" class="form-control" onkeyup="searchFilter('type')" placeholder="Search for Product Type..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="typeFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($types as $type):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="type" type="checkbox" value="{{$type->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$type->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('type')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('type')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Size
-                                            <a id="SizeFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="SizeFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('size')"  class="fas fa-filter pull-right"></a>
+                                            <div id="sizeDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="sizeSearch" class="form-control" onkeyup="searchFilter('size')" placeholder="Search for Size..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="sizeFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($sizes as $size):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="size" type="checkbox" value="{{$size->width.'X'.$size->height}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$size->width.'X'.$size->height}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('size')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('size')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Net Weight
@@ -97,17 +189,117 @@
                                         <th>
                                             Gross Weight
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Colour
-                                            <a id="ColourFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="ColourFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('colour')"  class="fas fa-filter pull-right"></a>
+                                            <div id="colourDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="colourSearch" class="form-control" onkeyup="searchFilter('colour')" placeholder="Search for Colour..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="colourFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($colours as $colour):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="colour" type="checkbox" value="{{$colour->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$colour->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('colour')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('colour')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Logo
-                                            <a id="LogoFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+
+                                            <a id="LogoFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('logo')"  class="fas fa-filter pull-right"></a>
+                                            <div id="logoDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="logoSearch" class="form-control" onkeyup="searchFilter('logo')" placeholder="Search for Logo..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="logoFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($logos as $logo):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="logo" type="checkbox" value="{{$logo->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$logo->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('logo')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('logo')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Factory Name
-                                            <a id="FactoryFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="FactoryFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('factory')"  class="fas fa-filter pull-right"></a>
+                                            <div id="factoryDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="factorySearch" class="form-control" onkeyup="searchFilter('factory')" placeholder="Search for Factory..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="factoryFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($factories as $factory):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="factory" type="checkbox" value="{{$factory->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$factory->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('factory')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('factory')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th class="no-sort">Action</th>
                                     </tr>
@@ -563,6 +755,51 @@
 
         <script>
 
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
+
             $(document).ready(function() {
                 $.ajaxSetup({
                     headers: {
@@ -575,6 +812,9 @@
                 $("#searchbar").on("keyup", function() {
                     checkFilter();
                 });
+                $("input[type='checkbox']").click(function() {
+                    checkFilter();
+                });
             });
             function getTables() {
                 $.ajax({
@@ -582,66 +822,6 @@
                     url: "{{ url('/dashboard/product/list') }}",
                     success: function(res){
                         $('#producttable').html(res.data);
-
-                        showFilter($("thead tr th:eq( 1 )"),
-                            "typefilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.types,function (key, value) {
-                            $('#typefilter .form-group').append(value);
-                        })
-                        $('#TypeFilter').click(function() {
-                            toggleFilter("typefilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 2 )"),
-                            "sizefilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.sizes,function (key, value) {
-                            $('#sizefilter .form-group').append(value);
-                        })
-                        $('#SizeFilter').click(function() {
-                            toggleFilter("sizefilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 5 )"),
-                            "colourfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.colours,function (key, value) {
-                            $('#colourfilter .form-group').append(value);
-                        })
-                        $('#ColourFilter').click(function() {
-                            toggleFilter("colourfilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 6 )"),
-                            "logofilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.logos,function (key, value) {
-                            $('#logofilter .form-group').append(value);
-                        })
-                        $('#LogoFilter').click(function() {
-                            toggleFilter("logofilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 7 )"),
-                            "factoryfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.factory,function (key, value) {
-                            $('#factoryfilter .form-group').append(value);
-                        })
-                        $('#FactoryFilter').click(function() {
-                            toggleFilter("factoryfilter");
-                        });
-
-                        $("input[type='checkbox']").click(function() {
-                            checkFilter();
-                        });
-
                     },
                     error: function(data){
                         console.log(data);

@@ -13,6 +13,35 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+
+
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link href="{{asset('css/jquery.stepy.css')}}" rel="stylesheet">
@@ -65,9 +94,43 @@
                                         <th>Name</th>
                                         <th>Phone</th>
                                         <th>Email</th>
-                                        <th>
-                                            Area                                            
-                                            <a id="AreaFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                        <th id="AreaHeader">
+                                            Area
+
+                                            <a id="AreaFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('area')"  class="fas fa-filter pull-right"></a>
+                                            <div id="areaDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="areaSearch" class="form-control" onkeyup="searchFilter('area')" placeholder="Search for Area..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="AreaFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($arealist as $areas):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="area" type="checkbox" value="{{$areas->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$areas->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('area')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('area')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th class="no-sort">Action</th>
                                     </tr>
@@ -608,6 +671,69 @@
     @section('script')
 
         <script>
+
+            window.onclick = function(event) {
+                if (!event.target.matches('#AreaHeader, #AreaHeader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                switch(type) {
+                    case "area":
+                        document.getElementById("areaDropdown").classList.toggle("show");
+                        break;
+                }
+            }
+
+            function clearSelection(type) {
+                switch(type) {
+                    case "area":
+                        $.each($("input[name='area']"), function(){     
+                            $(this).prop("checked",false);
+                        });
+                        checkFilter();
+                        break;
+                }
+            }
+            function allSelection(type) {
+                switch(type) {
+                    case "area":
+                        $.each($("input[name='area']"), function(){     
+                            $(this).prop("checked",true);
+                        });
+                        checkFilter();
+                        break;
+                }
+            }
+
+            function searchFilter(type) {
+                switch(type) {
+                    case "area":
+                        $("#AreaFilterList div").filter(function() {
+                            var value=$(this).text().toLowerCase();
+                            var elm=this;
+
+                            var searchtext=$("#areaSearch").val().toLowerCase();
+                            var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                            $(this).toggle(search);
+                        });
+                        break;
+                }
+
+            }
+
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
@@ -617,6 +743,10 @@
                 getTables();
 
                 $("#searchbar").on("keyup", function() {
+                    checkFilter();
+                });
+
+                $("input[type='checkbox']").click(function() {
                     checkFilter();
                 });
             });
@@ -633,67 +763,6 @@
                     success: function(res){
                         $('#salestable').html(res.data);
 
-                        showFilter($("thead tr th:eq( 5 )"),
-                            "areafilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.area,function (key, value) {
-                            $('#areafilter .form-group').append(value);
-                        })
-                        $('#AreaFilter').click(function() {
-                            toggleFilter("areafilter");
-                        });
-                        $("input[type='checkbox']").click(function() {
-                            checkFilter();
-                        });
-
-                        // showFilter($("thead tr th:eq( 3 )"),
-                        //     "sizefilter",
-                        //     "<div class='form-group '></div>");
-
-                        // $.each(res.size,function (key, value) {
-                        //     $('#sizefilter .form-group').append(value);
-                        // })
-                        // $('#SizeFilter').click(function() {
-                        //     toggleFilter("sizefilter");
-                        // });
-
-                        // showFilter($("thead tr th:eq( 6 )"),
-                        //     "colourfilter",
-                        //     "<div class='form-group '></div>");
-
-                        // $.each(res.colour,function (key, value) {
-                        //     $('#colourfilter .form-group').append(value);
-                        // })
-                        // $('#ColourFilter').click(function() {
-                        //     toggleFilter("colourfilter");
-                        // });
-
-                        // showFilter($("thead tr th:eq( 7 )"),
-                        //     "logofilter",
-                        //     "<div class='form-group '></div>");
-
-                        // $.each(res.logo,function (key, value) {
-                        //     $('#logofilter .form-group').append(value);
-                        // })
-                        // $('#LogoFilter').click(function() {
-                        //     toggleFilter("logofilter");
-                        // });
-
-                        // showFilter($("thead tr th:eq( 8 )"),
-                        //     "factoryfilter",
-                        //     "<div class='form-group '></div>");
-
-                        // $.each(res.factory,function (key, value) {
-                        //     $('#factoryfilter .form-group').append(value);
-                        // })
-                        // $('#FactoryFilter').click(function() {
-                        //     toggleFilter("factoryfilter");
-                        // });
-
-                        // $("input[type='checkbox']").click(function() {
-                        //     checkFilter();
-                        // });
 
                     },
                     error: function(data){
@@ -710,7 +779,6 @@
                     var value=$(this).text().toLowerCase();
                     var elm=this;
 
-
                     var searchtext=$("#searchbar").val().toLowerCase();
                     var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
 
@@ -719,50 +787,10 @@
                         area=( $(elm).children().eq(5).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||area;
                     });
 
-                    // var size=false;
-                    // $.each($("input[name='size']:checked"), function(){     
-                    //     size=( $(elm+":nth-child(3)").text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||size;
-                    // });
-
-                    // var colour=false;
-                    // $.each($("input[name='colour']:checked"), function(){     
-                    //     colour=( $(elm+":nth-child(6)").text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||colour;
-                    // });
-
-                    // var logo=false;
-                    // $.each($("input[name='logo']:checked"), function(){     
-                    //     logo=( $(elm+":nth-child(7)").text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||logo;
-                    // });
-
-                    // var factory=false;
-                    // $.each($("input[name='factory']:checked"), function(){     
-                    //     factory=( $(elm+":nth-child(8)").text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||factory;
-                    // });
-
                     $(this).toggle(search && area);
                 });
             }
 
-            function showFilter(x, id, contents) {
-                $('<div id="'+id+'" class="panel panel-primary">' + contents + '</div>').css({
-                    position: 'absolute',
-                    display: 'none',
-                    'min-width': x.outerWidth(),
-                    top: $('th').first().offset().top + $('th').first().outerHeight() ,
-                    left: x.offset().left ,
-                    zindex: 100,
-                    border: '1px solid #dddddd',
-                    padding: '10px',
-                        'font-size': '12px',
-                        'border-radius': '3px',
-                        'background-color': '#fff',
-                    opacity: 1,
-                }).appendTo("body");
-            }
-
-            function toggleFilter(id) {
-                $('#'+id).toggle();
-            }
 
             function editSales() {
 

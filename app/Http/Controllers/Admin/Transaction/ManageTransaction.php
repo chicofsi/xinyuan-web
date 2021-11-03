@@ -47,6 +47,7 @@ class ManageTransaction extends Controller
         $sales = Sales::all();
         $accounts = PaymentAccount::with('bank')->get();
         $company = Company::get();
+        $level = CustomerLevel::get();
 
         if(Auth::guard('web')->check()){
             $customer = Customer::all();
@@ -55,7 +56,7 @@ class ManageTransaction extends Controller
         }
         $warehouses = Warehouse::all();
 
-        return view('admin.transaction.index',compact('product','sales','customer','accounts','warehouses','company'));
+        return view('admin.transaction.index',compact('product','sales','customer','accounts','warehouses','company','level'));
     }
     
     public function full(Request $request)
@@ -119,33 +120,10 @@ class ManageTransaction extends Controller
                         </tr>";
             }
 
-            $filtercustomer=Customer::select('company_name')->get();
-
-            foreach ($filtercustomer as $key => $value) {
-                $customer[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='customer' value='".$value->company_name."' checked><label>".$value->company_name."</label></div></div>";
-            }
-
-            $filterlevel=CustomerLevel::select('level')->get();
-
-            foreach ($filterlevel as $key => $value) {
-                $level[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='level' value='".$value->level."' checked><label>".$value->level."</label></div></div>";
-            }
-
-
-            $filtersales=Sales::select('name')->get();
-
-            foreach ($filtersales as $key => $value) {
-                $sales[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='sales' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-            }
-
             $returndata['data']=$data;
-            $returndata['customer']=$customer;
-            $returndata['level']=$level;
-            $returndata['sales']=$sales;
 
             return $returndata;
         }
-
     }
 
     public function fulllist(Request $request)

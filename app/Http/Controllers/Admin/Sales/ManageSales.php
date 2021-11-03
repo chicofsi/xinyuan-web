@@ -78,17 +78,9 @@ class ManageSales extends Controller
 
             }
 
-            $filterarea=Area::select('name')->get();
-
-            foreach ($filterarea as $key => $value) {
-                $area[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='area' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-
-            }
-
             
 
             $returndata['data']=$data;
-            $returndata['area']=$area;
 
             return $returndata;
         }

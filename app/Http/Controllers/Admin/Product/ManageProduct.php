@@ -119,46 +119,8 @@ class ManageProduct extends Controller
 
             }
 
-            $filtertype=ProductType::select('name')->get();
-
-            foreach ($filtertype as $key => $value) {
-                $type[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='type' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-            }
-
-            $filtersize=ProductSize::select('width','height')->get();
-
-            foreach ($filtersize as $key => $value) {
-                $size[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='size' value='".$value->width."X".$value->height."' checked><label>".$value->width."X".$value->height."</label></div></div>";
-            }
-
-            $filtercolour=ProductColour::select('name')->get();
-            if($filtercolour->isEmpty()){
-                $colour[0]="No Choice";
-            }
-            foreach ($filtercolour as $key => $value) {
-                $colour[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='colour' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-            }
-
-            $filterlogo=ProductLogo::select('name')->get();
-            if($filterlogo->isEmpty()){
-                $logo[0]="No Choice";
-            }
-            foreach ($filterlogo as $key => $value) {
-                $logo[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='logo' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-            }
-
-            $filterfactory=Factories::select('name')->get();
-
-            foreach ($filterfactory as $key => $value) {
-                $factory[$key]="<div class='minimal single-row'><div class='checkbox '><input type='checkbox' name='factory' value='".$value->name."' checked><label>".$value->name."</label></div></div>";
-            }
 
             $returndata['data']=$data;
-            $returndata['types']=$type;
-            $returndata['sizes']=$size;
-            $returndata['colours']=$colour;
-            $returndata['logos']=$logo;
-            $returndata['factory']=$factory;
 
             return $returndata;
         }
