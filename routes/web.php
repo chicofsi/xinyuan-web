@@ -69,7 +69,6 @@ Route::get('/policy', function ()
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
 Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], function() {
 
 	Route::group(['prefix' => 'admin/todo'], function() {
@@ -335,11 +334,11 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 	    Route::post('/account'  , [ManageFinance::class, 'addAccount']);
 	    Route::get('/account/{id}'  , [ManageFinance::class, 'detail']);
 	    Route::get('/invoice/{id}'  , [ManageFinance::class, 'invoice']);
+
 	    Route::group(['prefix' => 'reports'], function() {
-
 	    	Route::get('/'  , [ManageFinanceReports::class, 'index']);
+	    	Route::post('profit_and_loss', [ManageFinanceReports::class, 'profitAndLoss']);
 	    });
-
 	    
 		Route::group(['prefix' => 'chart'], function() {
 		    Route::get('/list'  , [ManageFinance::class, 'getAccountAll']);

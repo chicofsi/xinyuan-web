@@ -99,7 +99,7 @@
                                                 <p>
                                                     Lists the individual transactions and totals for money you earned (income) and money you spent (expenses).
                                                 </p>
-                                                <button href="#ProfitAndLossModal" data-toggle="modal"  class="btn btn-primary" type="button">View Report</button>
+                                                <button href="#ProfitAndLossModal" onclick="getProfitAndLoss()" data-toggle="modal"  class="btn btn-primary" type="button">View Report</button>
                                             </div>
                                         </div>{{-- 
                                         <div class="panel ">
@@ -168,27 +168,31 @@
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                                        <h4 class="modal-title"  id="ProductDetailModalTitle">Product Details</h4>
+                                        <h4 class="modal-title"  id="ProfitAndLossTitle">Profit & Loss</h4>
                                     </div>
                                     <div class="modal-body"  style="background-color: #eff0f4">
-
-
-
-
-
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="panel">
                                                             <div class="panel-body">
-                                                                <div class="profile-desk">
-                                                                    <h1 id="ProductType"></h1>
-                                                                    <span id="ProductSize" style="margin-bottom: 10px"></span>
-                                                                    
-                                                                    <a href="#ProductEditModal" data-toggle="modal" data-original-title='editproduct' class='btn btn-default btn-sm pull-right'>Edit Data</a>
-                                                                    {{-- <a class="btn p-follow-btn pull-left" href="#"> <i class="fa fa-check"></i> Following</a> --}}
-
+                                                                <div class="col-md-12">
+                                                                    <h4>
+                                                                        Date Range
+                                                                    </h4>
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <label class="control-label">
+                                                                        <div class="col-md-12 input-group input-large custom-date-range"  data-date-format="mm/dd/yyyy">
+                                                                            <input id="from" type="text" class="form-control dpd1" name="from"  value="{{date('m/d/Y',strtotime("-7 days"))}}">
+                                                                            <span class="input-group-addon">To</span>
+                                                                            <input id="to" type="text" class="form-control dpd2" name="to" value="{{date('m/d/Y')}}">
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <button type="submit" onclick="getProfitAndLoss()" id="btn-search" class="btn btn-info">Search</button>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -197,79 +201,23 @@
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="panel">
-                                                            <header class="panel-heading custom-tab ">
-                                                                <ul class="nav nav-tabs">
-                                                                    <li class="active">
-                                                                        <a href="#statistic" data-toggle="tab"><i class="fas fa-chart-bar"></i> Product Statistic</a>
-                                                                    </li>
-                                                                    <li class="">
-                                                                        <a href="#gallery" data-toggle="tab"><i class="fas fa-user"></i> Gallery</a>
-                                                                    </li>
-
-                                                                    <li class="">
-                                                                        <a href="#transaction" data-toggle="tab"><i class="fas fa-user"></i> Transaction</a>
-                                                                    </li>
-                                                                    {{-- <li class="">
-                                                                        <a href="#stock" data-toggle="tab"><i class="fas fa-cash-register"></i> Stock</a>
-                                                                    </li> --}}
-                                                                </ul>
-                                                            </header>
+                                                            
+                                                            <div class="panel-heading">
+                                                                <div class="panel-title">Profit & Loss</div>
+                                                            </div>
                                                             <div class="panel-body">
-                                                                <div class="tab-content">
-                                                                    <div class="tab-pane active" id="statistic">
-                                                                        Product Sold Past 1 Year
-                                                                        <div id="product-sold-chart">
-                                                                            <div id="product-sold-container" style="width: 100%;height:300px; text-align: center; margin:0 auto;">
-                                                                            </div>
-                                                                        </div>
-                                                                        <br>
-                                                                    </div>
-                                                                    <div class="tab-pane" id="gallery">
-                                                                        <ul id="filters" class="media-filter">
-                                                                        </ul>
-
-                                                                        <div class="btn-group pull-right">
-                                                                            <a  href="#PhotoModal" data-toggle="modal">
-                                                                                <button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder-open"></i> Add New</button>
-                                                                            </a>
-                                                                        </div>
-
-                                                                        <div id="ProductGallery" class="media-gal">
-                                                                            
-
-                                                                        </div>
-
-                                                                        
-                                                                    </div>
-                                                                    <div class="tab-pane" id="transaction">
-                                                                        <table  class="display table table-striped" id="transaction_table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>ID</th>
-                                                                                    <th>
-                                                                                        Invoice Number
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        Customer
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        Sales Name
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        Date
-                                                                                    </th>
-                                                                                    <th>
-                                                                                        Total Payment
-                                                                                    </th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody id="TransactionList"></tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                    {{-- <div class="tab-pane" id="stock">
-                                                                        <ul class="activity-list" id="ProfileTransactionList">
-                                                                        </ul>
-                                                                    </div> --}}
+                                                                <div class="row">
+                                                                     <table  class="display table table-striped" id="product_table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th colspan="2">Date</th>
+                                                                                <th style="text-align: right;">
+                                                                                    {{date('m/d/Y',strtotime("-7 days"))." - ".date('m/d/Y')}}
+                                                                                </th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="profit_and_loss_table"></tbody>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -277,14 +225,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <form role="form" id="DeleteProductForm" name="DeleteProductForm">
-
-                                            <input type="hidden" id="IdProduct" name="id" ></input>
-                                            <button type="submit" id="DeleteButton" class="btn btn-danger">Delete Product</button>
-                                            
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -305,6 +245,45 @@
                 });
 
             });
+            function getProfitAndLoss() {
+                var from=$('#from').val();
+                var to=$('#to').val();
+                $.ajax({
+                    type:"POST",
+                    url: "{{ url('/dashboard/finance/reports/profit_and_loss') }}",
+                    data: { start_date: from, end_date: to},
+                    dataType: 'json',
+                    success: function(res){
+                        $('#profit_and_loss_table').html("");
+                        $('#profit_and_loss_table').append("<tr><th colspan='3'>Primary Income</th></tr>");
+
+                        $.each(res.profit_and_loss.primary_income.accounts.array,function (key, value) {
+                            $row="<tr>";
+
+                            $row+="<td style='padding-left:30px !important'><strong>"+value.number+"</strong></td>";
+                            
+                            $row+="<td><a href='{{ url('/dashboard/finance/account') }}/"+value.id+"'' ><button class='btn btn-link'>"+value.name+"</button></a></td>";
+
+                            $.each(value.data, function(k,val) {
+                                $row+="<td  style='text-align: right;'>"+val.balance+"</td>";
+                            });
+                            $row+="</tr>";
+
+                            $('#profit_and_loss_table').append($row);
+                        });
+                        $primary_income = "<tr><td style='padding-left:30px !important' colspan='2'>Total Primary Income</td>";
+                        $.each(res.profit_and_loss.primary_income.total, function(k,val) {
+                            $primary_income+="<td style='text-align: right;'>"+val.total+"</td>";
+                        });
+                        $primary_income += "</tr>";
+
+                        $('#profit_and_loss_table').append($primary_income);
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+            }
             
             function formatRupiah(angka, prefix){
                 var number_string = angka.replace(/[^,\d]/g, '').toString(),
