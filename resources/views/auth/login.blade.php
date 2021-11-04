@@ -9,8 +9,8 @@
 
     <title>Login</title>
 
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/style-responsive.css" rel="stylesheet">
+    <link href="{{ url('/vendor/adminex/adminex/adminex/html/') }}/css/style.css" rel="stylesheet">
+    <link href="{{ url('/vendor/adminex/adminex/adminex/html/') }}/css/style-responsive.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <img style="max-width: 200px" src="{{asset('img/icon-with-text.svg')}}" alt=""/>
         </div>
         <div class="login-wrap">
-            @if($errors->first('password'))
+            @if ($errors->first('password'))
                 <div class="alert alert-block alert-danger fade in">
                     <button type="button" class="close close-sm" data-dismiss="alert">
                         <i class="fa fa-times"></i>
@@ -37,7 +37,7 @@
                     {{$errors->first('password')}}
                 </div>
             @endif
-            
+
             <x-jet-input id="username" class="form-control" type="text" name="username" :value="old('username')" placeholder="Username/Email" required autofocus />
             <x-jet-input id="password" class="form-control" type="password" name="password" placeholder="Password" required autocomplete="current-password" />
 
@@ -45,8 +45,8 @@
                 <i class="fa fa-check"></i>
             </button>
 
-            
-            
+
+
 
         </div>
 
@@ -59,10 +59,9 @@
 <!-- Placed js at the end of the document so the pages load faster -->
 
 <!-- Placed js at the end of the document so the pages load faster -->
-<script src="js/jquery-1.10.2.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/modernizr.min.js"></script>
+<script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/jquery-1.10.2.min.js"></script>
+<script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/bootstrap.min.js"></script>
+<script src="{{ url('/vendor/adminex/adminex/adminex/html/') }}/js/modernizr.min.js"></script>
 
 </body>
 </html>
-
