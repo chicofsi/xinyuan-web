@@ -99,7 +99,7 @@
                                                 <p>
                                                     Lists the individual transactions and totals for money you earned (income) and money you spent (expenses).
                                                 </p>
-                                                <button class="btn btn-primary" type="button">View Report</button>
+                                                <button href="#ProfitAndLossModal" data-toggle="modal"  class="btn btn-primary" type="button">View Report</button>
                                             </div>
                                         </div>{{-- 
                                         <div class="panel ">
@@ -157,6 +157,134 @@
                                                 <button class="btn btn-primary" type="button">View Report</button>
                                             </div>
                                         </div> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div aria-hidden="true" role="dialog"  id="ProfitAndLossModal" class="modal fade">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                                        <h4 class="modal-title"  id="ProductDetailModalTitle">Product Details</h4>
+                                    </div>
+                                    <div class="modal-body"  style="background-color: #eff0f4">
+
+
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="panel">
+                                                            <div class="panel-body">
+                                                                <div class="profile-desk">
+                                                                    <h1 id="ProductType"></h1>
+                                                                    <span id="ProductSize" style="margin-bottom: 10px"></span>
+                                                                    
+                                                                    <a href="#ProductEditModal" data-toggle="modal" data-original-title='editproduct' class='btn btn-default btn-sm pull-right'>Edit Data</a>
+                                                                    {{-- <a class="btn p-follow-btn pull-left" href="#"> <i class="fa fa-check"></i> Following</a> --}}
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="panel">
+                                                            <header class="panel-heading custom-tab ">
+                                                                <ul class="nav nav-tabs">
+                                                                    <li class="active">
+                                                                        <a href="#statistic" data-toggle="tab"><i class="fas fa-chart-bar"></i> Product Statistic</a>
+                                                                    </li>
+                                                                    <li class="">
+                                                                        <a href="#gallery" data-toggle="tab"><i class="fas fa-user"></i> Gallery</a>
+                                                                    </li>
+
+                                                                    <li class="">
+                                                                        <a href="#transaction" data-toggle="tab"><i class="fas fa-user"></i> Transaction</a>
+                                                                    </li>
+                                                                    {{-- <li class="">
+                                                                        <a href="#stock" data-toggle="tab"><i class="fas fa-cash-register"></i> Stock</a>
+                                                                    </li> --}}
+                                                                </ul>
+                                                            </header>
+                                                            <div class="panel-body">
+                                                                <div class="tab-content">
+                                                                    <div class="tab-pane active" id="statistic">
+                                                                        Product Sold Past 1 Year
+                                                                        <div id="product-sold-chart">
+                                                                            <div id="product-sold-container" style="width: 100%;height:300px; text-align: center; margin:0 auto;">
+                                                                            </div>
+                                                                        </div>
+                                                                        <br>
+                                                                    </div>
+                                                                    <div class="tab-pane" id="gallery">
+                                                                        <ul id="filters" class="media-filter">
+                                                                        </ul>
+
+                                                                        <div class="btn-group pull-right">
+                                                                            <a  href="#PhotoModal" data-toggle="modal">
+                                                                                <button type="button" class="btn btn-primary btn-sm"><i class="fa fa-folder-open"></i> Add New</button>
+                                                                            </a>
+                                                                        </div>
+
+                                                                        <div id="ProductGallery" class="media-gal">
+                                                                            
+
+                                                                        </div>
+
+                                                                        
+                                                                    </div>
+                                                                    <div class="tab-pane" id="transaction">
+                                                                        <table  class="display table table-striped" id="transaction_table">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>ID</th>
+                                                                                    <th>
+                                                                                        Invoice Number
+                                                                                    </th>
+                                                                                    <th>
+                                                                                        Customer
+                                                                                    </th>
+                                                                                    <th>
+                                                                                        Sales Name
+                                                                                    </th>
+                                                                                    <th>
+                                                                                        Date
+                                                                                    </th>
+                                                                                    <th>
+                                                                                        Total Payment
+                                                                                    </th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody id="TransactionList"></tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                    {{-- <div class="tab-pane" id="stock">
+                                                                        <ul class="activity-list" id="ProfileTransactionList">
+                                                                        </ul>
+                                                                    </div> --}}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form role="form" id="DeleteProductForm" name="DeleteProductForm">
+
+                                            <input type="hidden" id="IdProduct" name="id" ></input>
+                                            <button type="submit" id="DeleteButton" class="btn btn-danger">Delete Product</button>
+                                            
+                                        </form>
                                     </div>
                                 </div>
                             </div>

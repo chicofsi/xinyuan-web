@@ -85,9 +85,9 @@
 
                                                     <div class="col-md-12">
                                                         <div class="form-check" style="padding: 5px;">
-                                                            <input class="form-check-input" name="invoice" type="checkbox" value="{{$invoice->name}}" checked>
+                                                            <input class="form-check-input" name="invoice" type="checkbox" value="{{$invoice->invoice_number}}" checked>
                                                             <label class="form-check-label" for="flexCheckChecked">
-                                                                {{$invoice->name}}
+                                                                {{$invoice->invoice_number}}
                                                             </label>
                                                         </div>
                                                     </div>
@@ -106,7 +106,7 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>
+                                <th id="filterheader">
                                     Customer
                                     <a id="CustomerFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('customer')"  class="fas fa-filter pull-right"></a>
                                     <div id="customerDropdown" class="dropdown-content" >
@@ -122,9 +122,9 @@
 
                                                     <div class="col-md-12">
                                                         <div class="form-check" style="padding: 5px;">
-                                                            <input class="form-check-input" name="customer" type="checkbox" value="{{$customer->name}}" checked>
+                                                            <input class="form-check-input" name="customer" type="checkbox" value="{{$customer->company_name}}" checked>
                                                             <label class="form-check-label" for="flexCheckChecked">
-                                                                {{$customer->name}}
+                                                                {{$customer->company_name}}
                                                             </label>
                                                         </div>
                                                     </div>
@@ -143,26 +143,26 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th>
+                                <th id="filterheader">
                                     Sales Name
                                     
-                                    <a id="ColourFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('colour')"  class="fas fa-filter pull-right"></a>
-                                    <div id="colourDropdown" class="dropdown-content" >
+                                    <a id="SalesFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('sales')"  class="fas fa-filter pull-right"></a>
+                                    <div id="salesDropdown" class="dropdown-content" >
                                         <div class="container" style="width: 100%;">
                                             <div class="row">
                                                 <div class="col-sm-12 mb-12">
-                                                    <input type="text" id="colourSearch" class="form-control" onkeyup="searchFilter('colour')" placeholder="Search for Colour..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                    <input type="text" id="salesSearch" class="form-control" onkeyup="searchFilter('sales')" placeholder="Search for Sales..." style="margin-top: 10px; margin-bottom: 10px;">
                                                 </div>
                                             </div>
 
-                                            <div class="row" id="colourFilterList" style="max-height: 200px; overflow-y: auto;">
-                                                <?php foreach ($colours as $colour):?>
+                                            <div class="row" id="salesFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                <?php foreach ($sales as $sal):?>
 
                                                     <div class="col-md-12">
                                                         <div class="form-check" style="padding: 5px;">
-                                                            <input class="form-check-input" name="colour" type="checkbox" value="{{$colour->name}}" checked>
+                                                            <input class="form-check-input" name="sales" type="checkbox" value="{{$sal->name}}" checked>
                                                             <label class="form-check-label" for="flexCheckChecked">
-                                                                {{$colour->name}}
+                                                                {{$sal->name}}
                                                             </label>
                                                         </div>
                                                     </div>
@@ -172,10 +172,10 @@
 
                                             <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
                                                 <div class="col-sm-6 mb-6">
-                                                    <button onclick="clearSelection('colour')" class="btn btn-danger">Clear</button>
+                                                    <button onclick="clearSelection('sales')" class="btn btn-danger">Clear</button>
                                                 </div>
                                                 <div class="col-sm-6 mb-6">
-                                                    <button onclick="allSelection('colour')" class="btn btn-success">All</button>
+                                                    <button onclick="allSelection('sales')" class="btn btn-success">All</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,8 +184,43 @@
                                 <th>
                                     Date
                                 </th>
-                                <th>
+                                <th id="filterheader">
                                     Product
+
+                                    <a id="ProductFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('product')"  class="fas fa-filter pull-right"></a>
+                                    <div id="productDropdown" class="dropdown-content" >
+                                        <div class="container" style="width: 100%;">
+                                            <div class="row">
+                                                <div class="col-sm-12 mb-12">
+                                                    <input type="text" id="productSearch" class="form-control" onkeyup="searchFilter('product')" placeholder="Search for Product..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                </div>
+                                            </div>
+
+                                            <div class="row" id="productFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                <?php foreach ($products as $product):?>
+
+                                                    <div class="col-md-12">
+                                                        <div class="form-check" style="padding: 5px;">
+                                                            <input class="form-check-input" name="product" type="checkbox" value="{{$product->type->name." ".$product->size->width."X".$product->size->height." ".$product->colour->name}}" checked>
+                                                            <label class="form-check-label" for="flexCheckChecked">
+                                                                {{$product->type->name." ".$product->size->width."X".$product->size->height." ".$product->colour->name}}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach?>
+
+                                            </div>
+
+                                            <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                <div class="col-sm-6 mb-6">
+                                                    <button onclick="clearSelection('product')" class="btn btn-danger">Clear</button>
+                                                </div>
+                                                <div class="col-sm-6 mb-6">
+                                                    <button onclick="allSelection('product')" class="btn btn-success">All</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </th>
                                 <th>
                                     Product Quantity
@@ -232,6 +267,50 @@
 
     <script>
 
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {

@@ -65,13 +65,18 @@ class ManageTransaction extends Controller
         $sales = Sales::all();
 
         if(Auth::guard('web')->check()){
-            $customer = Customer::all();
+            $customers = Customer::all();
         }else{ 
-            $customer = Customer::where('invited_by',$request->user()->id)->get();
+            $customers = Customer::where('invited_by',$request->user()->id)->get();
         }
 
+        $invoices = Transaction::all();
+        $products = Product::->with('type','size','colour','logo')->all();
 
-        return view('admin.transaction.fullscreen',compact('product','sales','customer'));
+
+
+
+        return view('admin.transaction.fullscreen',compact('product','sales','customers','invoices','products'));
         
     }
 
