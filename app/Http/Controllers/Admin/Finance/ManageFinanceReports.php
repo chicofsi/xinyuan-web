@@ -58,19 +58,21 @@ class ManageFinanceReports extends Controller
                 ]
             ]
         )->getBody()->getContents());
-        
-        $data.= "<tr>
-                    <td>".$value->invoice_number."</td>
-                    <td>".$customer->company_name."</td>
-                    <td>".$customer->customerlevel->level."</td>
-                    <td>".$value->sales->name."</td>
-                    <td>".$value->date."</td>
-                    <td>".number_format(intval($value->total_payment), 0, ',', ',')."</td>
-                    <td>".number_format(intval($value->paid), 0, ',', ',')."</td>
-                    <td>".$value->transactiondetails->count()."</td>
-                    <td>".$value->company->display_name."</td>
-                    <td><a href='javascript:void(0)' onClick=detail(".$value->id.") data-toggle='tooltip' data-original-title='detail' class='btn btn-default btn-sm'>Detail</a></td>
-                </tr>";
+        return Response()->json($reports);
+    }
+
+    public function balanceSheet(Request $request)
+    {
+        $reports = json_decode($this->client->request(
+            'GET',
+            'balance_sheet',
+            [
+                'form_params' => 
+                [
+                    'end_date' => date("d/m/Y", strtotime($request->end_date))
+                ]
+            ]
+        )->getBody()->getContents());
         return Response()->json($reports);
     }
 }

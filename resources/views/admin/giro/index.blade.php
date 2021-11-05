@@ -13,6 +13,34 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('js/jquery-multi-select/css/multi-select.css')}}" />
@@ -110,14 +138,134 @@
                                         <th>
                                             Balance
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Customer
+
+                                            <a id="CustomerFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('customer')"  class="fas fa-filter pull-right"></a>
+                                            <div id="customerDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="customerSearch" class="form-control" onkeyup="searchFilter('customer')" placeholder="Search for customer name..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="CustomerFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($customer as $cust):?>
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="customer" type="checkbox" value="{{$cust->company_name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$cust->company_name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('customer')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('customer')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Invoice Number
+
+                                            <a id="InvoiceFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('invoice')"  class="fas fa-filter pull-right"></a>
+                                            <div id="invoiceDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="invoiceSearch" class="form-control" onkeyup="searchFilter('invoice')" placeholder="Search for Invoice..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="invoiceFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($transaction as $invoice):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="invoice" type="checkbox" value="{{$invoice->invoice_number}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$invoice->invoice_number}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('invoice')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('invoice')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Status
+
+                                            <a id="StatusFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('status')"  class="fas fa-filter pull-right"></a>
+                                            <div id="statusDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="statusSearch" class="form-control" onkeyup="searchFilter('status')" placeholder="Search for Giro Status..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="statusFilterList" style="max-height: 200px; overflow-y: auto;">
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="Cashed on" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Cashed
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="Rejected" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Rejected
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="Haven't Cashed" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Haven't Cashed
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('invoice')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('invoice')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Action
@@ -413,7 +561,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <div onclick="reject()" id="btn-delete" class="btn btn-danger pull-left" style="display: inline !important;">Reject</div>
-                                            <button type="submit" id="btn-save" class="btn btn-success">Submit</button>
+                                            <button type="submit" id="btn-submit" class="btn btn-success">Cashed</button>
                                         </div>
 
                                     </form>
@@ -444,6 +592,51 @@
         <script type="text/javascript" src="{{asset('js/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
         <script type="text/javascript" src="{{asset('js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
+
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
@@ -462,6 +655,10 @@
                 $('#btn-search').click(function () {
                     getTables();
                 })
+
+                $("input[type='checkbox']").click(function() {
+                    checkFilter();
+                });
                 
                 
             });
@@ -494,12 +691,27 @@
                     var elm=this;
 
 
+                    var customer=false;
+                    $.each($("input[name='customer']:checked"), function(){     
+                        customer=( $(elm).children().eq(4).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||customer;
+                    });
+
+                    var invoice=false;
+                    $.each($("input[name='invoice']:checked"), function(){     
+                        invoice=( $(elm).children().eq(5).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||invoice;
+                    });
+
+                    var status=false;
+                    $.each($("input[name='status']:checked"), function(){     
+                        status=( $(elm).children().eq(6).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||status;
+                    });
+
                     var searchtext=$("#searchbar").val().toLowerCase();
                     var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
 
 
 
-                    $(this).toggle(search );
+                    $(this).toggle(search && invoice && status && customer);
                 });
             }
             function checkFilterTransaction() {
@@ -583,6 +795,18 @@
                         $('#detail_invoice_number').html(res.transaction.invoice_number);
                         $('#detail_giro_number').html(res.giro_number);
                         $('#detail_date_received').html(res.date_received);
+
+                        if(res.status == "cashed"){
+                            $('#btn-delete').css('display','none');
+                            $('#btn-submit').css('display','none');
+                        }else if(res.status == "rejected"){
+                            $('#btn-delete').css('display','none');
+                            $('#btn-submit').css('display','inline-block');
+                        }else{
+                            $('#btn-delete').css('display','inline-block');
+                            $('#btn-submit').css('display','inline-block');
+
+                        }
 
                     },
                     error: function(data){

@@ -338,6 +338,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 	    Route::group(['prefix' => 'reports'], function() {
 	    	Route::get('/'  , [ManageFinanceReports::class, 'index']);
 	    	Route::post('profit_and_loss', [ManageFinanceReports::class, 'profitAndLoss']);
+	    	Route::post('balance_sheet', [ManageFinanceReports::class, 'balanceSheet']);
 	    });
 	    
 		Route::group(['prefix' => 'chart'], function() {

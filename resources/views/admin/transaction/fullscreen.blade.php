@@ -267,50 +267,82 @@
 
     <script>
 
-            window.onclick = function(event) {
-                if (!event.target.matches('#filterheader, #filterheader *') ) {
-                    hideAllDropdown();
-                }
-            }
-            function hideAllDropdown() {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                var i;
-                for (i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
-                }
-            }
-            function showDropdown(type) {
+        window.onclick = function(event) {
+            if (!event.target.matches('#filterheader, #filterheader *') ) {
                 hideAllDropdown();
-                document.getElementById(type+"Dropdown").classList.toggle("show");
             }
+        }
+        function hideAllDropdown() {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+        function showDropdown(type) {
+            hideAllDropdown();
+            document.getElementById(type+"Dropdown").classList.toggle("show");
+        }
 
-            function clearSelection(type) {
-                $.each($("input[name='"+type+"']"), function(){     
-                    $(this).prop("checked",false);
+        function clearSelection(type) {
+            $.each($("input[name='"+type+"']"), function(){     
+                $(this).prop("checked",false);
+            });
+            checkFilter();
+        }
+        function allSelection(type) {
+            $.each($("input[name='"+type+"']"), function(){     
+                $(this).prop("checked",true);
+            });
+            checkFilter();
+        }
+
+        function searchFilter(type) {
+            $("#"+type+"FilterList div").filter(function() {
+                var value=$(this).text().toLowerCase();
+                var elm=this;
+
+                var searchtext=$("#"+type+"Search").val().toLowerCase();
+                var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                $(this).toggle(search);
+            });
+        }
+
+        function checkFilter() {
+            $("#transactiontable tr").filter(function() {
+                var value=$(this).text().toLowerCase();
+                var elm=this;
+
+
+                var searchtext=$("#searchbar").val().toLowerCase();
+                var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                var invoice=false;
+                $.each($("input[name='invoice']:checked"), function(){     
+                    invoice=( $(elm).children().eq(1).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||invoice;
                 });
-                checkFilter();
-            }
-            function allSelection(type) {
-                $.each($("input[name='"+type+"']"), function(){     
-                    $(this).prop("checked",true);
+
+                var customer=false;
+                $.each($("input[name='customer']:checked"), function(){     
+                    customer=( $(elm).children().eq(2).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||customer;
                 });
-                checkFilter();
-            }
 
-            function searchFilter(type) {
-                $("#"+type+"FilterList div").filter(function() {
-                    var value=$(this).text().toLowerCase();
-                    var elm=this;
-
-                    var searchtext=$("#"+type+"Search").val().toLowerCase();
-                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
-
-                    $(this).toggle(search);
+                var sales=false;
+                $.each($("input[name='sales']:checked"), function(){     
+                    sales=( $(elm).children().eq(3).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||sales;
                 });
-            }
+
+                var product=false;
+                $.each($("input[name='product']:checked"), function(){     
+                    product=( $(elm).children().eq(5).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||product;
+                });
+                $(this).toggle(search && invoice && customer && sales && product );
+            });
+        }
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
@@ -321,6 +353,10 @@
             getTables();
 
             $("#searchbar").on("keyup", function() {
+                checkFilter();
+            });
+
+            $("input[type='checkbox']").click(function() {
                 checkFilter();
             });
         });
