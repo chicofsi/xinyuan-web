@@ -128,6 +128,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 
     Route::group(['prefix' => 'product'], function() {
         Route::get('/'  , [ManageProduct::class, 'index']);
+        Route::get('jurnal'  , [ManageProduct::class, 'uploadProductToJurnal']);
         Route::get('list'  , [ManageProduct::class, 'list']);
         Route::post('photo'  , [ManageProduct::class, 'addPhoto']);
         Route::post('photo/detail'  , [ManageProduct::class, 'getPhotoDetail']);
@@ -142,6 +143,8 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 
 	    Route::group(['prefix' => 'factories'], function() {
 	        Route::get('/'  , [ManageFactories::class, 'index']);
+	        Route::get('/jurnal'  , [ManageFactories::class, 'registerJurnal']);
+
 		    Route::post('/edit'  , [ManageFactories::class, 'edit']);
 		    Route::post('/store'  , [ManageFactories::class, 'store']);
 		    Route::post('/delete'  , [ManageFactories::class, 'destroy']);
@@ -206,6 +209,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
     Route::group(['prefix' => 'bank'], function() {
     	Route::group(['prefix' => 'account'], function() {
 	        Route::get('/'  , [ManagePaymentAccount::class, 'index']);
+		    Route::get('/jurnal'  , [ManagePaymentAccount::class, 'uploadPaymentAccountToJurnal']);
 		    Route::post('/edit'  , [ManagePaymentAccount::class, 'edit']);
 		    Route::post('/store'  , [ManagePaymentAccount::class, 'store']);
 		    Route::post('/delete'  , [ManagePaymentAccount::class, 'destroy']);
@@ -227,11 +231,11 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 		    Route::post('/delete'  , [ManageLevel::class, 'destroy']);
 		    Route::post('/change'  , [ManageCustomer::class, 'changeLevel']);
 	    });
+        Route::get('/jurnal'  , [ManageCustomer::class, 'uploadCustomerToJurnal']);
 
         Route::post('photo'  , [ManageCustomer::class, 'addPhoto']);
         Route::post('photo/detail'  , [ManageCustomer::class, 'getPhotoDetail']);
         Route::post('photo/delete'  , [ManageCustomer::class, 'deletePhoto']);
-	    Route::get('/'  , [ManageCustomer::class, 'index']);
 	    Route::get('/summary'  , [ManageCustomer::class, 'summary']);
 	    Route::post('/summary/list'  , [ManageCustomer::class, 'summarylist']);
 	    Route::get('/list'  , [ManageCustomer::class, 'list']);
@@ -240,11 +244,16 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 	    Route::post('/store'  , [ManageCustomer::class, 'store']);
 	    Route::post('/delete'  , [ManageCustomer::class, 'destroy']);
         Route::get('/list/{id_area?}'  , [ManageCustomer::class, 'list']);
+	    Route::get('/'  , [ManageCustomer::class, 'index']);
+
         Route::get('/{id_area?}'  , [ManageCustomer::class, 'index']);
+
 	});
 
 	Route::group(['prefix' => 'transaction'], function() {
 	    Route::get('/'  , [ManageTransaction::class, 'index']);
+	    Route::get('/jurnal'  , [ManageTransaction::class, 'uploadTransactionToJurnal']);
+	    Route::get('/delete-jurnal'  , [ManageTransaction::class, 'deleteJurnalTransaction']);
 	    Route::post('/list'  , [ManageTransaction::class, 'list']);
 	    Route::post('/edit'  , [ManageTransaction::class, 'edit']);
 	    Route::post('/detail'  , [ManageTransaction::class, 'show']);

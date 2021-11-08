@@ -383,6 +383,39 @@ class ManageProduct extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    public function uploadProductToJurnal(Request $request)
+    {
+        $product = Product::all();
+        foreach ($product as $key => $value) {
+            if($value->jurnal_id==null){
+                $name= ProductType::where('id',$value->id_type)->first()->name." ".ProductSize::where('id',$value->id_size)->first()->width."X".ProductSize::where('id',$value->id_size)->first()->height." ".Factories::where('id',$value->id_factories)->first()->name." ".ProductColour::where('id',$value->id_colour)->first()->name." ".ProductLogo::where('id',$value->id_logo)->first()->name;
+                $is_bought=true;
+                $is_sold=true;
+                
+                $response = json_decode($this->client->request(
+                    'POST',
+                    'products',
+                    [
+                        'json' => 
+                        [
+                            "product" => [
+                                "name"=>$name,
+                                "is_bought"=>$is_bought,
+                                "is_sold"=>$is_sold,
+                                "track_inventory"=> "true",
+                                "inventory_asset_account_number"=> "1-10200"
+                            ]
+                        ]
+                    ]
+                )->getBody()->getContents());
+
+               $product   =   Product::where('id',$value->id)->update([
+                    'jurnal_id' => $response->product->id,
+                    ]);
+            }
+        }
+    }
     public function store(Request $request)
     {
         $weight=null;

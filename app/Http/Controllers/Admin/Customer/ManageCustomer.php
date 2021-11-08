@@ -262,6 +262,42 @@ class ManageCustomer extends Controller
         return Response()->json($customer);
     }
 
+    public function uploadCustomerToJurnal(Request $request)
+    {
+        $customer = Customer::all();
+        foreach($customer as $key => $value){
+            if($value->jurnal_id == null){
+                $person=[];
+
+                $person["display_name"]=$value->administrator_name;
+                $person["is_customer"]=true;
+                $person["is_vendor"]=false;
+                $person["is_employee"]=false;
+                $person["is_others"]=false;
+                $person["first_name"]=$value->administrator_name;
+                $person["phone"]=$value->company_phone;
+                $person["associate_company"]=$value->company_name;
+                $person["mobile"]=$value->administrator_phone;
+                $person["tax_no"]=$value->companynpwp;
+                $person["address"]=$value->company_address;
+
+                $contact = json_decode($this->client->request(
+                    'POST',
+                    'contacts',
+                    [
+                        'json' => [
+                            'person'=>$person
+                        ]
+                    ]
+                )->getBody()->getContents());
+                Customer::where('id',$value->id)->update([
+                    'jurnal_id'=>$contact->person->id
+                ]);
+            }
+        }
+        return "complete";
+    }
+
     /**
      * Store a newly created resource in storage.
      *

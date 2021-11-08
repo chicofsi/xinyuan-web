@@ -131,6 +131,34 @@ class ManagePaymentAccount extends Controller
         return Response()->json($account);
         
     }
+    public function uploadPaymentAccountToJurnal(Request $request)
+    {
+        $paymentaccount = PaymentAccount::all();
+        foreach ($paymentaccount as $key => $value) {
+            if($value->jurnal_id==null){
+                $cash = json_decode($this->client->request(
+                    'POST',
+                    'accounts',
+                    [
+                        'json' => 
+                        [
+                            'account' => 
+                            [
+                                'name' => $value->account_name." ".$value->account_number,
+                                'number' => '1-10002'.$value->id,
+                                'parent_category_name'=> 'Rekening Bank',
+                                'as_a_child'=> true,
+                                'category_name' => "Cash & Bank"
+                            ]
+                        ]
+                    ]
+                )->getBody()->getContents());
+                $account=PaymentAccount::where('id',$value->id)->update([
+                            'jurnal_id' => $cash->account->id, 
+                        ]);  
+            }
+        }
+    }
 
     /**
      * Display the specified resource.

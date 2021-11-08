@@ -28,7 +28,7 @@ class ManageFactories extends Controller
         $factories=Factories::get();
 
         foreach ($factories as $key => $value) {
-            if($value->jurnal_id==0){
+            if($value->jurnal_id==null){
                 $person=[];
 
                 $person["display_name"]=$value->name;
@@ -47,7 +47,7 @@ class ManageFactories extends Controller
                     ]
                 )->getBody()->getContents());
 
-                $factories   =   Factories::where('id',$value->id)->update([
+                $factory   =   Factories::where('id',$value->id)->update([
                     'jurnal_id'=>$contact->person->id
                 ]);
             }

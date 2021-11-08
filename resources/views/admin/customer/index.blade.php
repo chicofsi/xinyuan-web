@@ -771,6 +771,20 @@
                
             });
             function getTables() {
+                var url="{{ url('/dashboard/customer/jurnal') }}";
+
+                $.ajax({
+                    type:"GET",
+                    url: url,
+                    success: function(res){
+                        console.log(res);
+
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                });
+
                 @if (!empty($area))
                     var url="{{ url('/dashboard/customer/list/'.$area->id) }}";
                 @else

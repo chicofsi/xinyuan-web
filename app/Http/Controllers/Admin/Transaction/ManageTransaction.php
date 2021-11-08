@@ -71,7 +71,7 @@ class ManageTransaction extends Controller
         }
 
         $invoices = Transaction::all();
-        $products = Product::->with('type','size','colour','logo')->all();
+        $products = Product::with('type','size','colour','logo')->all();
 
 
 
@@ -353,6 +353,92 @@ class ManageTransaction extends Controller
         ]);
                          
         return Response()->json($transactiondetails);
+    }
+
+    public function deleteJurnalTransaction(Request $request)
+    {
+
+        $salesinvoices = json_decode($this->client->request(
+            'GET',
+            'sales_invoices',
+            [
+                'form_params' => 
+                [
+                    'page' => 1,
+                    'page_size' => 1000,
+                    'sort_key' => 'transaction_date',
+                    'sort_order' => 'asc'
+                ]
+            ]
+        )->getBody()->getContents());
+        foreach ($salesinvoices->sales_invoices as $key => $value) {
+            $id=$value->id;
+            $response = json_decode($this->client->request(
+                'DELETE',
+                'sales_invoices/'.$id
+            )->getBody()->getContents());
+        }
+    }
+
+    public function uploadTransactionToJurnal(Request $request)
+    {
+
+        $transactionall = Transaction::where('jurnal_id',null)->get()->take(150);
+        foreach ($transactionall as $key => $value) {
+            if($value->jurnal_id==null){
+                $transaction=Transaction::where('id',$value->id)->with('customer','transactiondetails')->first();
+                $warehouse=Warehouse::where('id',$transaction->id_warehouse)->first();
+                $data=[];
+                $data['transaction_date'] = date("d/m/Y", strtotime($transaction->date));  
+                $data['due_date'] = date("d/m/Y", strtotime($transaction->payment_deadline));  
+                
+                $transaction_line=[];
+                foreach ($transaction->transactiondetails as $key => $value) {
+                    $product=Product::where('id',$value->id_product)->first();
+                    $product = json_decode($this->client->request(
+                        'GET',
+                        'products/'.$product->jurnal_id
+                    )->getBody()->getContents());
+
+                    $transaction_line[$key]["quantity"]=$value->quantity;
+                    $transaction_line[$key]["product_name"]=$product->product->name;
+                    $transaction_line[$key]["rate"]=$value->price;
+                }
+
+                $datedeadline=strtotime($transaction->payment_deadline);
+                $date=strtotime($transaction->date);
+                $transaction->tempo =  round(($datedeadline - $date) / (60 * 60 * 24));
+                if($transaction->tempo==0){
+                    $term="Cash on Delivery";
+                }else{
+                    $term="Net ".$transaction->tempo;
+                }
+
+                $person = json_decode($this->client->request(
+                        'GET',
+                        'contacts/'.$transaction->customer->jurnal_id
+                    )->getBody()->getContents());
+
+                $response = json_decode($this->client->request(
+                    'POST',
+                    'sales_invoices',
+                    [
+                        'json' => 
+                        [
+                            "sales_invoice" => [
+                                "transaction_date" => $data['transaction_date'],
+                                "transaction_lines_attributes" => $transaction_line,
+                                "term_name"=> $term,
+                                "due_date"=> $data['due_date'],
+                                "warehouse_id"=> $warehouse->jurnal_id,
+                                "person_name"=> $person->person->display_name,
+                            ]
+                        ]
+                    ]
+                )->getBody()->getContents());
+                $data=Transaction::where('id',$transaction->id)->update(['jurnal_id'=>$response->sales_invoice->id]);
+            }
+        }
     }
 
     public function storeJurnal(Request $request)

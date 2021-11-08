@@ -19,7 +19,7 @@ class JurnalHelper
     {
         $client = new Client([
             'base_uri' => 'https://api.jurnal.id/partner/core/api/v1/',
-            'timeout'  => 30.0,
+            'timeout'  => 3600.0,
             'headers' => [
                 'Authorization' => "Bearer 0abe1eb54edc4922aa99abe1099f301e",
                 'apikey' => "d14b308eca384af46fd5b1f9356808de"
