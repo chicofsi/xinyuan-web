@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     public function getProduct(Request $request)
     {
-    	$product=Product::where('still_available',1)->with('productphoto','factories','logo','colour','type','size');
+    	$product=Product::where('still_available',1)->with('productphoto','factories','logo','colour','type','size','weight','grossweight');
 
     	if($request->has('id_product')){
     		$product=$product->where('id',$request->id_product);

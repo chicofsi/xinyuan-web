@@ -21,23 +21,32 @@ use App\Models\TransactionPayment;
 use App\Models\Product;
 use App\Models\Giro;
 use App\Models\Bank;
+use App\Models\Warehouse;
 use App\Models\PaymentAccount;
+
+use App\Helper\JurnalHelper;
 
 class TransactionController extends Controller
 {
-    
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        $this->client = JurnalHelper::index();
+    }
     public function addTransaction(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'invoice_number' => 'required',
             'id_customer' => 'required',
+            'id_warehouse' => 'required',
             'payment' => 'required',
             'payment_period' => 'required',
             'date' => 'required',
-            'paid' => 'required',
             'total_payment' => 'required',
+            'id_company' => 'required',
+            'product' => 'required'
         ]);
 
         if ($validator->fails()) {          
@@ -52,11 +61,13 @@ class TransactionController extends Controller
                 'invoice_number' => $request->invoice_number,
                 'id_sales' => $request->user()->id,
                 'id_customer' => $request->id_customer,
+                'id_warehouse' => $request->id_warehouse,
                 'date' => date("Y-m-d",strtotime($request->date)),
                 'payment' => $request->payment,
                 'payment_deadline' => Date('Y-m-d', strtotime($request->date.' +'.$tempo.' days')),
                 'paid' => 0,
-                'total_payment' => $request->total_payment
+                'total_payment' => $request->total_payment,
+                'id_company' => $request->id_company,
             ]);
 
             if($request->payment == "cash"){
@@ -69,52 +80,122 @@ class TransactionController extends Controller
                 Transaction::where('id',$transaction->id)->update(['paid'=>$request->total_payment]);
             }
 
-            
+            foreach ($request->product as $key => $value) {
+                $transactiondetails = TransactionDetails::create([
+                    'id_transaction' => $transaction->id,
+                    'id_product' => $value['id_product'],
+                    'quantity' => $value['quantity'],
+                    'price' => $value['price'],
+                    'total' => $value['total']
+                ]);
+            }
 
-            $data=Transaction::where('id',$transaction->id)->first();
+            $transaction = Transaction::where('id',$transaction->id)->with('transactiondetails','transactionpayment','giro','sales','customer','warehouse','company')->first();
+            $this->storeTransactionJurnal($transaction->id);
+            $data=new TransactionResource($transaction);
 
-            return  response()->json(new ValueMessage(['value'=>1,'message'=>'Customer Register Success!','data'=>  $transaction]), 200);;
-            
+            return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Transaction Success!','data'=>  $data]), 200);;
+        }
+    }
+
+    public function storeTransactionJurnal($id_transaction)
+    {
+        $transaction=Transaction::where('id',$id_transaction)->with('customer','transactiondetails')->first();
+        $warehouse=Warehouse::where('id',$transaction->id_warehouse)->first();
+        $data=[];
+        $data['transaction_date'] = date("d/m/Y", strtotime($transaction->date));  
+        $data['due_date'] = date("d/m/Y", strtotime($transaction->payment_deadline));  
+        
+        $transaction_line=[];
+        foreach ($transaction->transactiondetails as $key => $value) {
+            $product=Product::where('id',$value->id_product)->first();
+            $product = json_decode($this->client->request(
+                'GET',
+                'products/'.$product->jurnal_id
+            )->getBody()->getContents());
+
+            $transaction_line[$key]["quantity"]=$value->quantity;
+            $transaction_line[$key]["product_name"]=$product->product->name;
+            $transaction_line[$key]["rate"]=$value->price;
         }
 
+        $datedeadline=strtotime($transaction->payment_deadline);
+        $date=strtotime($transaction->date);
+        $transaction->tempo =  round(($datedeadline - $date) / (60 * 60 * 24));
+        if($transaction->tempo==0){
+            $term="Cash on Delivery";
+        }else{
+            $term="Net ".$transaction->tempo;
+        }
+
+        $person = json_decode($this->client->request(
+                'GET',
+                'contacts/'.$transaction->customer->jurnal_id
+            )->getBody()->getContents());
+
+        $response = json_decode($this->client->request(
+            'POST',
+            'sales_invoices',
+            [
+                'json' => 
+                [
+                    "sales_invoice" => [
+                        "transaction_date" => $data['transaction_date'],
+                        "transaction_lines_attributes" => $transaction_line,
+                        "term_name"=> $term,
+                        "due_date"=> $data['due_date'],
+                        "warehouse_id"=> $warehouse->jurnal_id,
+                        "person_name"=> $person->person->display_name,
+                    ]
+                ]
+            ]
+        )->getBody()->getContents());
+        $data=Transaction::where('id',$id_transaction)->update(['jurnal_id'=>$response->sales_invoice->id]);
+
+        if($transaction->payment=="cash"){
+            $transaction=Transaction::where('id',$id_transaction)->with('transactionpayment')->first();
+
+            $invoice = json_decode($this->client->request(
+                'GET',
+                'sales_invoices/'.$transaction->jurnal_id
+            )->getBody()->getContents());
+
+            $transaction_line=[];
+            $transaction_line[0]["transaction_no"]= $invoice->sales_invoice->transaction_no;
+            $transaction_line[0]["amount"]=$transaction->total_payment;
+
+            $paymentaccount=PaymentAccount::where('id',$transaction->transactionpayment[0]->id_payment_account)->first();
+
+            $account = json_decode($this->client->request(
+                'GET',
+                'accounts/'.$paymentaccount->jurnal_id
+            )->getBody()->getContents());
+            
+            $date = date("d/m/Y", strtotime($transaction->transactionpayment[0]->date));  
+
+            $response = json_decode($this->client->request(
+                'POST',
+                'receive_payments',
+                [
+                    'json' => 
+                    [
+                        "receive_payment" => [
+                            "transaction_date" => $date,
+                            "records_attributes"=> $transaction_line,
+                            "payment_method_name"=> "Cash",
+                            "is_draft"=> false,
+                            "deposit_to_name"=> $account->account->name
+                        ]
+                    ]
+                ]
+            )->getBody()->getContents());
+
+            $transactionpayment=TransactionPayment::where('id',$transaction->transactionpayment[0]->id)->update(['jurnal_id'=>$response->receive_payment->id]);
+        }
     }
     
-    public function addTransactionDetails(Request $request)
-    {
-        
-        $validator = Validator::make($request->all(), [
-            'id_transaction' => 'required',
-            'id_product' => 'required',
-            'quantity' => 'required',
-            'price' => 'required',
-            'total' => 'required'
-        ]);
-
-        if ($validator->fails()) {          
-            return response()->json(['error'=>$validator->errors()], 400);                        
-        }else{
-            
-            
-            
-            $transactiondetails = TransactionDetails::create([
-                'id_transaction' => $request->id_transaction,
-                'id_product' => $request->id_product,
-                'quantity' => $request->quantity,
-                'price' => $request->price,
-                'total' => $request->total
-            ]);
-
-            $transaction=Transaction::where('id',$request->id_transaction)->with('transactiondetails')->first();
-
-
-            return  response()->json(new ValueMessage(['value'=>1,'message'=>'Add Transaction Details Success!','data'=>  $transaction]), 200);
-        }
-
-    }
-
     public function addTransactionPayment(Request $request)
     {
-        
         $validator = Validator::make($request->all(), [
             'id_transaction' => 'required',
             'paid' => 'required',
@@ -136,13 +217,52 @@ class TransactionController extends Controller
             $paid=Transaction::where('id',$request->id_transaction)->first()->paid;
             $newpaid=intval($paid)+intval($request->paid);
             Transaction::where('id',$request->id_transaction)->update(['paid'=>$newpaid]);
-
-            
-
-
+            $this->storePaymentJurnal($transactionpayment->id);
             return  response()->json(new ValueMessage(['value'=>1,'message'=>'Payment Success!','data'=>  $transactionpayment]), 200);
         }
+    }
+    public function storePaymentJurnal($id_payment)
+    {
+        $transactionpayment=TransactionPayment::where('id',$id_payment)->first();
+        $transaction=Transaction::where('id',$transactionpayment->id_transaction)->first();
 
+        $invoice = json_decode($this->client->request(
+            'GET',
+            'sales_invoices/'.$transaction->jurnal_id
+        )->getBody()->getContents());
+
+        $transaction_line=[];
+        $transaction_line[0]["transaction_no"]= $invoice->sales_invoice->transaction_no;
+        $transaction_line[0]["amount"]=$transactionpayment->paid;
+
+        $paymentaccount=PaymentAccount::where('id',$transactionpayment->id_payment_account)->first();
+
+        $account = json_decode($this->client->request(
+            'GET',
+            'accounts/'.$paymentaccount->jurnal_id
+        )->getBody()->getContents());
+        
+        $date = date("d/m/Y", strtotime($transactionpayment->date));  
+
+
+        $response = json_decode($this->client->request(
+            'POST',
+            'receive_payments',
+            [
+                'json' => 
+                [
+                    "receive_payment" => [
+                        "transaction_date" => $date,
+                        "records_attributes"=> $transaction_line,
+                        "payment_method_name"=> "Cash",
+                        "is_draft"=> false,
+                        "deposit_to_name"=> $account->account->name
+                    ]
+                ]
+            ]
+        )->getBody()->getContents());
+
+        $transactionpayment=TransactionPayment::where('id',$id_payment)->update(['jurnal_id'=>$response->receive_payment->id]);
     }
 
     public function addTransactionGiro(Request $request)
@@ -220,7 +340,7 @@ class TransactionController extends Controller
             return response()->json(['error'=>$validator->errors()], 400);                        
         }else{
             
-            $data=new TransactionResource(Transaction::where('id',$request->id_transaction)->with('transactiondetails','transactionpayment','giro','sales','customer')->first());
+            $data=new TransactionResource(Transaction::where('id',$request->id_transaction)->with('transactiondetails','transactionpayment','giro','sales','customer','warehouse','company')->first());
 
             
 
@@ -254,7 +374,7 @@ class TransactionController extends Controller
 
     public function getSalesTransaction(Request $request)
     {
-        $data=Transaction::where('id_sales',$request->user()->id)->with('transactiondetails','transactionpayment','giro')->orderBy('id','desc')->get();
+        $data=Transaction::where('id_sales',$request->user()->id)->with('transactiondetails','transactionpayment','giro','company','warehouse')->orderBy('id','desc')->get();
 
         if($data->isEmpty()){
             $returndata=[];
@@ -264,12 +384,7 @@ class TransactionController extends Controller
             }
         }
 
-        
-
-
         return  response()->json(new ValueMessage(['value'=>1,'message'=>'Get Transaction List Success!','data'=>  $returndata]), 200);
-        
-
     }
     public function getTransactionPayment(Request $request)
     {

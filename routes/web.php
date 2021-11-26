@@ -320,6 +320,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 	    });
 	    Route::get('/'  , [ManagePayment::class, 'index']);
 	    Route::post('/edit'  , [ManagePayment::class, 'edit']);
+	    Route::get('/store-jurnal'  , [ManagePayment::class, 'StorePaymentToJurnal']);
 	    Route::post('/update'  , [ManagePayment::class, 'update']);
 	    Route::post('/list'  , [ManagePayment::class, 'list']);
 	    Route::post('/detail'  , [ManagePayment::class, 'show']);

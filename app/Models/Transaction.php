@@ -49,8 +49,10 @@ class Transaction extends Model
     public function customer(){
         return $this->belongsTo('App\Models\Customer','id_customer','id');
     } 
-
     public function company(){
         return $this->belongsTo('App\Models\Company','id_company','id');
+    } 
+    public function warehouse(){
+        return $this->belongsTo('App\Models\Warehouse','id_warehouse','id');
     } 
 }

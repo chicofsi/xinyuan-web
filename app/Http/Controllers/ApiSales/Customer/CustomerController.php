@@ -14,9 +14,19 @@ use App\Models\Customer;
 use App\Models\CustomerLevel;
 use App\Models\CustomerPhoto;
 use App\Models\Area;
+use App\Helper\JurnalHelper;
+
 
 class CustomerController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        $this->client = JurnalHelper::index();
+    }
+
     public function getArea(Request $request)
     {
         $area=Area::get();
@@ -99,7 +109,33 @@ class CustomerController extends Controller
                 'id_level' => $request->id_level
             ]);
 
-            
+            $person=[];
+
+            $person["display_name"]=$request->administrator_name;
+            $person["is_customer"]=true;
+            $person["is_vendor"]=false;
+            $person["is_employee"]=false;
+            $person["is_others"]=false;
+            $person["first_name"]=$request->administrator_name;
+            $person["phone"]=$companyphone;
+            $person["associate_company"]=$request->company_name;
+            $person["mobile"]=$request->administrator_phone;
+            $person["tax_no"]=$companynpwp;
+            $person["address"]=$request->company_address;
+
+            $contact = json_decode($this->client->request(
+                'POST',
+                'contacts',
+                [
+                    'json' => [
+                        'person'=>$person
+                    ]
+                ]
+            )->getBody()->getContents());
+
+            Customer::where('id',$customer->id)->update([
+                'jurnal_id'=>$contact->person->id
+            ]);
 
             $data=Customer::where('id',$customer->id)->with('customerlevel','customerphoto')->first();
 

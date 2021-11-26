@@ -201,6 +201,53 @@ class ManagePayment extends Controller
         $transactionpayment=TransactionPayment::where('id',$transactionpayment->id)->update(['jurnal_id'=>$response->receive_payment->id]);
         return $transactionpayment;
     }
+    public function StorePaymentToJurnal(Request $request)
+    {
+        
+        $paymentall = TransactionPayment::where('jurnal_id',null)->get()->take(100);
+
+        foreach ($paymentall as $key => $value) {
+            $transaction=Transaction::where('id',$value->id_transaction)->first();
+
+            $invoice = json_decode($this->client->request(
+                'GET',
+                'sales_invoices/'.$transaction->jurnal_id
+            )->getBody()->getContents());
+
+            $transaction_line=[];
+            $transaction_line[0]["transaction_no"]= $invoice->sales_invoice->transaction_no;
+            $transaction_line[0]["amount"]=$value->paid;
+
+            $paymentaccount=PaymentAccount::where('id',$value->id_payment_account)->first();
+
+            $account = json_decode($this->client->request(
+                'GET',
+                'accounts/'.$paymentaccount->jurnal_id
+            )->getBody()->getContents());
+            
+            $date= date("d/m/Y", strtotime($value->date));  
+
+
+            $response = json_decode($this->client->request(
+                'POST',
+                'receive_payments',
+                [
+                    'json' => 
+                    [
+                        "receive_payment" => [
+                            "transaction_date" => $date,
+                            "records_attributes"=> $transaction_line,
+                            "payment_method_name"=> "Cash",
+                            "is_draft"=> false,
+                            "deposit_to_name"=> $account->account->name
+                        ]
+                    ]
+                ]
+            )->getBody()->getContents());
+
+            TransactionPayment::where('id',$value->id)->update(['jurnal_id'=>$response->receive_payment->id]);
+        }
+    }
 
 
 

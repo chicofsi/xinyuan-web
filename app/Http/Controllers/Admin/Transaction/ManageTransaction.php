@@ -382,7 +382,6 @@ class ManageTransaction extends Controller
 
     public function uploadTransactionToJurnal(Request $request)
     {
-
         $transactionall = Transaction::where('jurnal_id',null)->get()->take(150);
         foreach ($transactionall as $key => $value) {
             if($value->jurnal_id==null){

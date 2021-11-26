@@ -489,8 +489,6 @@ class ManageProduct extends Controller
             'jurnal_id' => $response->product->id,
             ]);
         return Response()->json($product);
-    
-        
     }
     
     /**

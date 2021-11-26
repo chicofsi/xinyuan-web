@@ -54,6 +54,8 @@ class Transaction extends JsonResource
             'id' => $this->id,
             'invoice_number' => $this->invoice_number,
             'sales' => $this->sales->name,
+            'company' => $this->company->display_name,
+            'warehouse' => $this->warehouse->name,
             'customer' => $this->customer->company_name,
             'date' => $this->date,
             'payment' => $this->payment,
