@@ -252,6 +252,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 
 	Route::group(['prefix' => 'transaction'], function() {
 	    Route::get('/'  , [ManageTransaction::class, 'index']);
+	    Route::get('/export'  , [ManageTransaction::class, 'export']);
 	    Route::get('/jurnal'  , [ManageTransaction::class, 'uploadTransactionToJurnal']);
 	    Route::get('/delete-jurnal'  , [ManageTransaction::class, 'deleteJurnalTransaction']);
 	    Route::post('/list'  , [ManageTransaction::class, 'list']);
@@ -269,6 +270,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 
 		Route::get('/refund'  , [ManageTransactionReturn::class, 'index']);
 		Route::post('/refund/detail'  , [ManageTransactionReturn::class, 'detail']);
+		Route::get('/refund/export'  , [ManageTransactionReturn::class, 'export']);
 		Route::post('/refund/edit'  , [ManageTransactionReturn::class, 'edit']);
 		Route::post('/refund/delete'  , [ManageTransactionReturn::class, 'edit']);
 		Route::post('/refund/list'  , [ManageTransactionReturn::class, 'list']);
@@ -305,11 +307,13 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 		Route::group(['prefix' => 'history'], function() {
 		    Route::get('/'  , [ManagePaymentHistory::class, 'index']);
 		    Route::post('/list'  , [ManagePaymentHistory::class, 'list']);
+		    Route::get('/export'  , [ManagePaymentHistory::class, 'export']);
 		    Route::post('/detail'  , [ManagePaymentHistory::class, 'show']);
 		    Route::post('/pay'  , [ManagePaymentHistory::class, 'pay']);
 	    });
 	    Route::group(['prefix' => 'giro'], function() {
 		    Route::get('/'  , [ManageGiro::class, 'index']);
+	    	Route::get('/export'  , [ManageGiro::class, 'export']);
 		    Route::get('/transaction'  , [ManageGiro::class, 'getTransaction']);
 	    	Route::post('/transaction/detail'  , [ManageTransaction::class, 'show']);
 		    Route::post('/list'  , [ManageGiro::class, 'list']);
@@ -380,6 +384,7 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 		});
 		Route::group(['prefix' => 'purchase'], function() {
 	    	Route::get('/'  , [ManageFinancePurchases::class, 'index']);
+	    	Route::get('/export'  , [ManageFinancePurchases::class, 'export']);
 			Route::get('/invoice/new'  , [ManageFinancePurchases::class, 'newInvoice']);
 		    Route::post('/invoice/new'  , [ManageFinancePurchases::class, 'addNewInvoice']);
 		    Route::get('/invoice/{id}'  , [ManageFinancePurchases::class, 'invoice']);
@@ -425,6 +430,9 @@ Route::group(['prefix' => 'dashboard','middleware' =>['auth:web,sales']], functi
 
 	    Route::get('/banktransfer'  , [ManageFinance::class, 'bankTransfer']);
 	    Route::post('/banktransfer'  , [ManageFinance::class, 'addBankTransfer']);
+
+	    Route::get('/receivemoney'  , [ManageFinance::class, 'receiveMoney']);
+	    Route::post('/receivemoney'  , [ManageFinance::class, 'addReceiveMoney']);
 
 
 

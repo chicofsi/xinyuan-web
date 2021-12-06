@@ -13,6 +13,34 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link href="{{asset('css/jquery.stepy.css')}}" rel="stylesheet">
@@ -65,17 +93,84 @@
                                         <th>
                                             Administrator Name
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Area
-                                            <a id="AreaFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+
+                                            <a id="AreaFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('area')"  class="fas fa-filter pull-right"></a>
+                                            <div id="areaDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="areaSearch" class="form-control" onkeyup="searchFilter('area')" placeholder="Search for Area..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="areaFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($arealist as $areaa):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="area" type="checkbox" value="{{$areaa->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$areaa->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('area')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('area')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Level
-                                            <a id="LevelFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+
+                                            <a id="LevelFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('level')"  class="fas fa-filter pull-right"></a>
+                                            <div id="levelDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="levelSearch" class="form-control" onkeyup="searchFilter('level')" placeholder="Search for Level..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="levelFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($levels as $level):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="level" type="checkbox" value="{{$level->level}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$level->level}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('level')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('level')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Tempo
-                                            <a id="TempoFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
                                         </th>
                                         <th>
                                             Limit
@@ -730,6 +825,52 @@
     @section('script')
 
         <script>
+
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
+
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
@@ -739,6 +880,10 @@
                 getTables();
 
                 $("#searchbar").on("keyup", function() {
+                    checkFilter();
+                });
+
+                $("input[type='checkbox']").click(function() {
                     checkFilter();
                 });
             });
@@ -784,7 +929,6 @@
                         console.log(data);
                     }
                 });
-
                 @if (!empty($area))
                     var url="{{ url('/dashboard/customer/list/'.$area->id) }}";
                 @else
@@ -794,47 +938,7 @@
                     type:"GET",
                     url: url,
                     success: function(res){
-                        console.log(res);
                         $('#customertable').html(res.data);
-
-                        showFilter($("thead tr th:eq( 3 )"),
-                            "areafilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.area,function (key, value) {
-                            $('#areafilter .form-group').append(value);
-                        })
-                        $('#AreaFilter').click(function() {
-                            toggleFilter("areafilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 4 )"),
-                            "levelfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.level,function (key, value) {
-                            $('#levelfilter .form-group').append(value);
-                        })
-                        $('#LevelFilter').click(function() {
-                            toggleFilter("levelfilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 5 )"),
-                            "tempofilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.tempo,function (key, value) {
-                            $('#tempofilter .form-group').append(value);
-                        })
-                        $('#TempoFilter').click(function() {
-                            toggleFilter("tempofilter");
-                        });
-
-
-                        $("input[type='checkbox']").click(function() {
-                            checkFilter();
-                        });
-
                     },
                     error: function(data){
                         console.log(data);
@@ -1151,21 +1255,17 @@
 
                     var area=false;
                     $.each($("input[name='area']:checked"), function(){     
-                        area=( $(elm).children().eq(3).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||area;
+                        area=( $(elm).children().eq(2).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||area;
                     });
  
                     var level=false;
                     $.each($("input[name='level']:checked"), function(){     
-                        level=( $(elm).children().eq(4).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||level;
-                    });
-
-                    var tempo=false;
-                    $.each($("input[name='tempo']:checked"), function(){     
-                        tempo=( $(elm).children().eq(5).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||tempo;
+                        level=( $(elm).children().eq(3).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||level;
                     });
 
 
-                    $(this).toggle(search && area && level && tempo);
+
+                    $(this).toggle(search && area && level);
                 });
             }
 

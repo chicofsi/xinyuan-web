@@ -179,6 +179,8 @@ return [
 
         Yajra\Datatables\DatatablesServiceProvider::class,
 
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        
     ],
 
     /*
@@ -234,6 +236,8 @@ return [
         'Datatables' => Yajra\Datatables\Facades\Datatables::class,
 
         'JurnalHelper' => App\Helper\JurnalHelper::class,
+
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
     ],
 

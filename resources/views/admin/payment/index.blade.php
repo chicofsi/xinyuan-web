@@ -13,6 +13,35 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+
+        
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('js/jquery-multi-select/css/multi-select.css')}}" />
@@ -98,17 +127,117 @@
                                         <th>
                                             Invoice Number
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Customer
-                                            <a id="CustomerFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+
+                                            <a id="CustomerFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('customer')"  class="fas fa-filter pull-right"></a>
+                                            <div id="customerDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="customerSearch" class="form-control" onkeyup="searchFilter('customer')" placeholder="Search for customer name..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="customerFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($customer as $cust):?>
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="customer" type="checkbox" value="{{$cust->company_name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$cust->company_name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('customer')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('customer')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Level
-                                            <a id="LevelFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+                                            <a id="LevelFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('level')"  class="fas fa-filter pull-right"></a>
+                                            <div id="levelDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="levelSearch" class="form-control" onkeyup="searchFilter('level')" placeholder="Search for customer level..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="levelFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($level as $lev):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="level" type="checkbox" value="{{$lev->level}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$lev->level}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('level')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('level')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Sales Name
-                                            <a id="SalesFilter" style="text-decoration: none;color: #dddddd"  class="fas fa-filter pull-right"></a>
+
+                                            <a id="SalesFilter" style="text-decoration: none;color: #dddddd"  onclick="showDropdown('sales')"  class="fas fa-filter pull-right"></a>
+                                            <div id="salesDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="salesSearch" class="form-control" onkeyup="searchFilter('sales')" placeholder="Search for Sales Name..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="salesFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($sales as $sal):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="sales" type="checkbox" value="{{$sal->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$sal->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('sales')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('sales')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Date
@@ -394,6 +523,51 @@
         <script type="text/javascript" src="{{asset('js/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
         <script type="text/javascript" src="{{asset('js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
+
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
@@ -409,6 +583,10 @@
                 $('#btn-search').click(function () {
                     getTables();
                 })
+
+                $("input[type='checkbox']").click(function() {
+                    checkFilter();
+                });
                 
                 
             });
@@ -429,68 +607,11 @@
                     success: function(res){
                         $('#transactiontable').html(res.data);
 
-
-                        showFilter($("thead tr th:eq( 2 )"),
-                            "levelfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.level,function (key, value) {
-                            $('#levelfilter .form-group').append(value);
-                        })
-                        $('#LevelFilter').click(function() {
-                            toggleFilter("levelfilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 1 )"),
-                            "customerfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.customer,function (key, value) {
-                            $('#customerfilter .form-group').append(value);
-                        })
-                        $('#CustomerFilter').click(function() {
-                            toggleFilter("customerfilter");
-                        });
-
-                        showFilter($("thead tr th:eq( 3 )"),
-                            "salesfilter",
-                            "<div class='form-group '></div>");
-
-                        $.each(res.sales,function (key, value) {
-                            $('#salesfilter .form-group').append(value);
-                        })
-                        $('#SalesFilter').click(function() {
-                            toggleFilter("salesfilter");
-                        });
-
-                        $("input[type='checkbox']").click(function() {
-                            checkFilter();
-                        });
-
                     },
                     error: function(data){
                         console.log(data);
                     }
                 });
-            }
-            function toggleFilter(id) {
-                $('#'+id).toggle();
-            }
-            function showFilter(x, id, contents) {
-                $('<div id="'+id+'" class="panel panel-primary">' + contents + '</div>').css({
-                    position: 'absolute',
-                    display: 'none',
-                    'min-width': x.outerWidth(),
-                    top: $('th').first().offset().top + $('th').first().outerHeight() ,
-                    left: x.offset().left ,
-                    zindex: 100,
-                    border: '1px solid #dddddd',
-                    padding: '10px',
-                        'font-size': '12px',
-                        'border-radius': '3px',
-                        'background-color': '#fff',
-                    opacity: 1,
-                }).appendTo("body");
             }
             function checkFilter() {
                 var value = $("#searchbar").val().toLowerCase();

@@ -89,6 +89,7 @@
                                             </div>
                                         </label>
                                         <button type="submit" id="btn-search" class="btn btn-info">Search</button>
+                                        <button id="btn-export" onclick="export_data()" class="btn btn-danger">Export Excel</button>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="control-label">Customer Status
@@ -885,9 +886,13 @@
                         console.log(data);
                     }
                 }); 
-
-            
             });
+            function export_data() {
+                var from=$('#from').val();
+                var to=$('#to').val();
+                var company=$('#company').val();
+                window.location.replace("{{ url('/dashboard/payment/giro/export')}}?from="+from+"&to="+to+"&id_company="+company);
+            }
         </script>
 
     @endsection

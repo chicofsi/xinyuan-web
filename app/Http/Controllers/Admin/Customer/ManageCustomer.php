@@ -41,7 +41,7 @@ class ManageCustomer extends Controller
     {
         $arealist = Area::all();
         $sales = Sales::all();
-        $levels = CustomerLevel::all();
+        $levels = CustomerLevel::distinct()->groupBy('level')->get();
         if($id_area != null){
             $area = Area::where('id',$id_area)->first();
 

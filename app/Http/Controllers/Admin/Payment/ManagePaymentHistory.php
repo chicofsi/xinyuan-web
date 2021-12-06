@@ -18,6 +18,9 @@ use App\Models\TransactionPayment;
 use App\Models\PaymentAccount;
 use App\Models\Company;
 
+use App\Exports\PaymentHistoryExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ManagePaymentHistory extends Controller
 {
 
@@ -43,6 +46,21 @@ class ManagePaymentHistory extends Controller
 
         return view('admin.payment.history',compact('product','sales','customer','accounts','company'));
         
+    }
+
+    public function export(Request $request)
+    {
+        $from = date("Y-m-d",strtotime($request->input('from')));
+        $to = date("Y-m-d",strtotime($request->input('to')));
+
+        $history = new PaymentHistoryExport($request->input('id_payment_account'),$request->input('id_company'),$from,$to);
+        if($request->input('id_company')!=0){
+            $company = Company::where('id',$request->input('id_company'))->first()->name;
+        }else{
+            $company = "All-Company";
+        }
+        
+        return Excel::download($history, 'payment_'.$from."_".$to."_".$company.'.xlsx');
     }
 
     public function list(Request $request)

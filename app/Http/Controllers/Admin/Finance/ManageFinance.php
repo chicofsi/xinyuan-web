@@ -42,7 +42,6 @@ class ManageFinance extends Controller
      */
     public function index()
     {
-        
         return view('admin.finance.index');
     }
     public function detail($id)
@@ -225,7 +224,6 @@ class ManageFinance extends Controller
         )->getBody()->getContents());
 
         return view('admin.finance.banktransfer', compact('cash','credit'));
-
     }
     public function addBankTransfer(Request $request)
     {
@@ -266,6 +264,88 @@ class ManageFinance extends Controller
                             'transaction_no'=> $transaction_no,
                             'memo'=> $memo,
                             'transfer_amount'=> $request->amount
+                        ]
+                    ]
+                ]
+            )->getBody()->getContents());
+
+            return redirect('dashboard/finance');
+        }
+
+    }
+
+    public function receiveMoney(Request $request)
+    {
+        $cash = json_decode($this->client->request(
+            'GET',
+            'accounts',
+            [
+                'form_params' => 
+                [
+                    'category_id' => 3
+                ]
+            ]
+        )->getBody()->getContents());
+
+        $credit = json_decode($this->client->request(
+            'GET',
+            'accounts',
+            [
+                'form_params' => 
+                [
+                    'category_id' => 9
+                ]
+            ]
+        )->getBody()->getContents());
+
+        $contacts = json_decode($this->client->request(
+            'GET',
+            'contacts',
+            [
+                'query' => [
+                    'contact_index' => '{"curr_page":1,"selected_tab":5,"sort_asc":true,"show_archive":false}'
+                ]
+            ]
+        )->getBody()->getContents())->contact_list->contact_data;
+
+        return view('admin.finance.receivemoney', compact('cash','credit','contacts'));
+
+    }
+    public function addReceiveMoney(Request $request)
+    {
+        if($request->from == $request->to || $request->amount<=0){
+            $error="Transfer amount Should not be empty or zero, Deposit to (Not allowed to transfer to the same account.)";
+            return redirect()->back()->withErrors( $error);
+        }else{
+            $from=json_decode($this->client->request(
+                'get',
+                'accounts/'.$request->from
+            )->getBody()->getContents());
+
+            $to=json_decode($this->client->request(
+                'get',
+                'accounts/'.$request->to
+            )->getBody()->getContents());
+            $transaction_no=null;
+            $memo=null;
+            if ($request->has('memo')) {
+                $memo=$request->memo;
+            }
+
+            $request->transaction_date = date("d/m/Y", strtotime($request->transaction_date));  
+            $response= json_decode($this->client->request(
+                'POST',
+                'bank_deposits',
+                [
+                    'json' => 
+                    [
+                        'bank_deposit' => 
+                        [
+                            'person_name' => $from->account->name,
+                            'deposit_to_name'=> $to->account->name,
+                            'transaction_date'=> $request->transaction_date,
+                            'memo'=> $memo,
+                            'transaction_account_lines_attributes'=> $data_lines
                         ]
                     ]
                 ]

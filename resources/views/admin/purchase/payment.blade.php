@@ -13,6 +13,33 @@
         .profile-pic img{
             object-fit: contain !important;
         }
+        .dropdown {
+          position: relative;
+          display: inline-block;
+        }
+
+        .dropdown-content {
+          display: none;
+          position: absolute;
+          background-color: #ffffff;
+          min-width: 200px;
+          max-width: 300px;
+          max-height: 400px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          margin-top: 10px;
+          z-index: 1;
+        }
+
+        .dropdown-content a {
+          color: black;
+          padding: 12px 16px;
+          text-decoration: none;
+          display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd}
+
+        .show {display:block;}
     </style>
     <link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap-fileupload.min.css')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('js/jquery-multi-select/css/multi-select.css')}}" />
@@ -78,8 +105,42 @@
                                         <th>
                                             Invoice Number
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Factories
+                                            <a id="FactoryFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('factory')"  class="fas fa-filter pull-right"></a>
+                                            <div id="factoryDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="factorySearch" class="form-control" onkeyup="searchFilter('factory')" placeholder="Search for Factory..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="factoryFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <?php foreach ($factories as $factory):?>
+
+                                                            <div class="col-md-12">
+                                                                <div class="form-check" style="padding: 5px;">
+                                                                    <input class="form-check-input" name="factory" type="checkbox" value="{{$factory->name}}" checked>
+                                                                    <label class="form-check-label" for="flexCheckChecked">
+                                                                        {{$factory->name}}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        <?php endforeach?>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('factory')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('factory')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th>
                                             Date
@@ -103,8 +164,67 @@
                                         <th>
                                             Debt Due Date
                                         </th>
-                                        <th>
+                                        <th id="filterheader">
                                             Payment Status
+
+                                            <a id="StatusFilter" style="text-decoration: none;color: #dddddd" onclick="showDropdown('status')"  class="fas fa-filter pull-right"></a>
+                                            <div id="statusDropdown" class="dropdown-content" >
+                                                <div class="container" style="width: 100%;">
+                                                    <div class="row">
+                                                        <div class="col-sm-12 mb-12">
+                                                            <input type="text" id="statusSearch" class="form-control" onkeyup="searchFilter('status')" placeholder="Search for Payment Status..." style="margin-top: 10px; margin-bottom: 10px;">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row" id="statusFilterList" style="max-height: 200px; overflow-y: auto;">
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="warning" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Due Date Today
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="danger" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Late Payment
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="info" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Haven't Paid
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12">
+                                                            <div class="form-check" style="padding: 5px;">
+                                                                <input class="form-check-input" name="status" type="checkbox" value="success" checked>
+                                                                <label class="form-check-label" for="flexCheckChecked">
+                                                                    Payment Done
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="clearSelection('status')" class="btn btn-danger">Clear</button>
+                                                        </div>
+                                                        <div class="col-sm-6 mb-6">
+                                                            <button onclick="allSelection('status')" class="btn btn-success">All</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </th>
                                         <th class="no-sort">Action</th>
                                     </tr>
@@ -374,6 +494,52 @@
         <script type="text/javascript" src="{{asset('js/bootstrap-datepicker/js/bootstrap-datepicker.js')}}"></script>
         <script type="text/javascript" src="{{asset('js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js')}}"></script>
         <script>
+
+            window.onclick = function(event) {
+                if (!event.target.matches('#filterheader, #filterheader *') ) {
+                    hideAllDropdown();
+                }
+            }
+            function hideAllDropdown() {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+            function showDropdown(type) {
+                hideAllDropdown();
+                document.getElementById(type+"Dropdown").classList.toggle("show");
+            }
+
+            function clearSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",false);
+                });
+                checkFilter();
+            }
+            function allSelection(type) {
+                $.each($("input[name='"+type+"']"), function(){     
+                    $(this).prop("checked",true);
+                });
+                checkFilter();
+            }
+
+            function searchFilter(type) {
+                $("#"+type+"FilterList div").filter(function() {
+                    var value=$(this).text().toLowerCase();
+                    var elm=this;
+
+                    var searchtext=$("#"+type+"Search").val().toLowerCase();
+                    var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
+
+                    $(this).toggle(search);
+                });
+            }
+
             $(document).ready( function () {
                 $.ajaxSetup({
                     headers: {
@@ -388,9 +554,10 @@
                 })
                 $('#btn-search').click(function () {
                     getTables();
-                })
-                
-                
+                })                
+                $("input[type='checkbox']").click(function() {
+                    checkFilter();
+                });
             });
             $('#editdate').datepicker({ dateFormat: 'mm/dd/yyyy' });
             
@@ -424,7 +591,16 @@
                     var searchtext=$("#searchbar").val().toLowerCase();
                     var search=$(this).text().toLowerCase().indexOf(searchtext) > -1;
 
-                    $(this).toggle(search);
+                    var factory=false;
+                    $.each($("input[name='factory']:checked"), function(){     
+                        factory=( $(elm).children().eq(1).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||factory;
+                    });
+
+                    var status=false;
+                    $.each($("input[name='status']:checked"), function(){     
+                        status=( $(elm).children().eq(9).text().toLowerCase().indexOf($(this).val().toLowerCase()) > -1 )||status;
+                    });
+                    $(this).toggle(search && factory && status);
                 });
             }
 

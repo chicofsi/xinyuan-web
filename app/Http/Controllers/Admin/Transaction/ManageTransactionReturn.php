@@ -21,6 +21,9 @@ use App\Models\PaymentAccount;
 use App\Models\CustomerLevel;
 use App\Models\Company;
 
+use App\Exports\RefundExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ManageTransactionReturn extends Controller
 {
 
@@ -40,6 +43,20 @@ class ManageTransactionReturn extends Controller
 
         return view('admin.transaction.return',compact('company'));
         
+    }
+    public function export(Request $request)
+    {
+        $from = date("Y-m-d",strtotime($request->input('from')));
+        $to = date("Y-m-d",strtotime($request->input('to')));
+
+        $refund = new RefundExport($request->input('id_company'),$from,$to);
+        if($request->input('id_company')!=0){
+            $company = Company::where('id',$request->input('id_company'))->first()->name;
+        }else{
+            $company = "All-Company";
+        }
+        
+        return Excel::download($refund, 'refund_'.$from."_".$to."_".$company.'.xlsx');
     }
     
     public function list(Request $request)

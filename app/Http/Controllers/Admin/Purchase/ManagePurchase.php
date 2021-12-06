@@ -22,6 +22,9 @@ use App\Models\WarehouseProduct;
 
 use App\Helper\JurnalHelper;
 
+use App\Exports\PurchaseExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ManagePurchase extends Controller
 {
 
@@ -47,6 +50,16 @@ class ManagePurchase extends Controller
 
 
         return view('admin.purchase.index',compact('product','factories','accounts','currency','warehouses'));
+    }
+
+    public function export(Request $request)
+    {
+        $from = date("Y-m-d",strtotime($request->input('from')));
+        $to = date("Y-m-d",strtotime($request->input('to')));
+
+        $purchase = new PurchaseExport($from,$to);
+        
+        return Excel::download($purchase, 'purchase_'.$from."_".$to.'.xlsx');
     }
 
     public function list(Request $request)

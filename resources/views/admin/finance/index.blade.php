@@ -232,10 +232,8 @@
                                             "</button>"+
                                             "<ul role='menu' class='dropdown-menu'>"+
                                                 "<li><a href='{{ url('dashboard/finance/banktransfer') }}?from="+value.id+"'>Transfer Funds</a></li>"+
-                                                "<li><a href='#'>Receive Money</a></li>"+
+                                                "<li><a href='{{ url('dashboard/finance/receivemoney') }}?from="+value.id+"'>Receive Money</a></li>"+
                                                 "<li><a href='#'>Pay Money</a></li>"+
-                                                "<li class='divider'></li>"+
-                                                "<li><a href='#'>Import Bank Statement</a></li>"+
                                             "</ul>"+
                                         "</div>"+
                                     "</td>";
@@ -262,10 +260,8 @@
                                                     "</button>"+
                                                     "<ul role='menu' class='dropdown-menu'>"+
                                                         "<li><a href='{{ url('dashboard/finance/banktransfer') }}?from="+val.account.id+"'>Transfer Funds</a></li>"+
-                                                        "<li><a href='#'>Receive Money</a></li>"+
+                                                        "<li><a href='{{ url('dashboard/finance/receivemoney') }}?from="+val.account.id+"'>Receive Money</a></li>"+
                                                         "<li><a href='#'>Pay Money</a></li>"+
-                                                        "<li class='divider'></li>"+
-                                                        "<li><a href='#'>Import Bank Statement</a></li>"+
                                                     "</ul>"+
                                                 "</div>"+
                                             "</td>"+
@@ -304,10 +300,8 @@
                                             "</button>"+
                                             "<ul role='menu' class='dropdown-menu'>"+
                                                 "<li><a href='{{ url('dashboard/finance/banktransfer') }}?from="+value.id+"'>Transfer Funds</a></li>"+
-                                                "<li><a href='#'>Receive Money</a></li>"+
+                                                "<li><a href='{{ url('dashboard/finance/receivemoney') }}?from="+value.id+"'>Receive Money</a></li>"+
                                                 "<li><a href='#'>Pay Money</a></li>"+
-                                                "<li class='divider'></li>"+
-                                                "<li><a href='#'>Import Bank Statement</a></li>"+
                                             "</ul>"+
                                         "</div>"+
                                     "</td>";
@@ -335,10 +329,8 @@
                                                     "</button>"+
                                                     "<ul role='menu' class='dropdown-menu'>"+
                                                         "<li><a href='{{ url('dashboard/finance/banktransfer') }}?from="+val.account.id+"'>Transfer Funds</a></li>"+
-                                                        "<li><a href='#'>Receive Money</a></li>"+
+                                                        "<li><a href='{{ url('dashboard/finance/receivemoney') }}?from="+val.account.id+"'>Receive Money</a></li>"+
                                                         "<li><a href='#'>Pay Money</a></li>"+
-                                                        "<li class='divider'></li>"+
-                                                        "<li><a href='#'>Import Bank Statement</a></li>"+
                                                     "</ul>"+
                                                 "</div>"+
                                             "</td>"+

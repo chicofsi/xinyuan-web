@@ -292,7 +292,8 @@ class TransactionController extends Controller
                 'date_received' => date("Y-m-d",strtotime($request->date_received)),
                 'id_payment_account' => null,
                 'cashed' => 0,
-                'date_cashed' => null
+                'date_cashed' => null,
+                'status' => "pending"
             ]);
             
             $giro=Giro::where('id',$giro->id)->first();

@@ -37,13 +37,13 @@ class ManagePayment extends Controller
      */
     public function index()
     {
-        $product = Product::all();
         $sales = Sales::all();
         $customer = Customer::all();
+        $level = CustomerLevel::distinct()->groupBy('level')->get();
         $company = Company::all();
         $accounts = PaymentAccount::with('bank')->get();
 
-        return view('admin.payment.index',compact('product','sales','customer','accounts','company'));
+        return view('admin.payment.index',compact('sales','customer','accounts','company','level'));
         
     }
 

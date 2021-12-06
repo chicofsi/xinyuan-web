@@ -26,6 +26,9 @@ use App\Models\WarehouseProduct;
 use App\Models\Company;
 use App\Helper\JurnalHelper;
 
+use App\Exports\TransactionExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ManageTransaction extends Controller
 {
 
@@ -47,7 +50,7 @@ class ManageTransaction extends Controller
         $sales = Sales::all();
         $accounts = PaymentAccount::with('bank')->get();
         $company = Company::get();
-        $level = CustomerLevel::get();
+        $level = CustomerLevel::distinct()->groupBy('level')->get();
 
         if(Auth::guard('web')->check()){
             $customer = Customer::all();
@@ -57,6 +60,20 @@ class ManageTransaction extends Controller
         $warehouses = Warehouse::all();
 
         return view('admin.transaction.index',compact('product','sales','customer','accounts','warehouses','company','level'));
+    }
+    public function export(Request $request)
+    {
+        $from = date("Y-m-d",strtotime($request->input('from')));
+        $to = date("Y-m-d",strtotime($request->input('to')));
+
+        $transaction = new TransactionExport($request->input('id_company'),$from,$to);
+        if($request->input('id_company')!=0){
+            $company = Company::where('id',$request->input('id_company'))->first()->name;
+        }else{
+            $company = "All-Company";
+        }
+        
+        return Excel::download($transaction, 'transaction_'.$from."_".$to."_".$company.'.xlsx');
     }
     
     public function full(Request $request)
